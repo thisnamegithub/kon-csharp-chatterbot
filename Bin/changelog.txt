@@ -1,0 +1,273 @@
+0.0.1
+- First version. 
+- Very basic IRC code that allows the bot to join a server and idle in a channel
+
+0.0.2
+- Implemented the AIML dll and added AIML support
+- Added the start of Kon's original brain
+- Added multiple console commands
+
+0.0.3
+- Added bot commands that can be accessed via users on IRC:
+  !splash, !quit, !reload, !togglebrain, !braininfo  
+
+0.0.4
+- Added code to generate and read a configuration file (in XML format)
+- Added /quit
+
+1.0.5
+- Added the first incarnation of "Google Brain"
+- Added the filter class
+- Seperated the AIML brain from Kon's original brain
+- Added !toggleGoogle
+- Changed !togglebrain to !toggleAIML
+
+1.0.6
+- Changed "brain.kon" to "kon.brain" in order to keep consistency later on (with new brain
+  additions).
+- Updated AIML dll by myself in order to try and improve memory management.  The new dll MUST be 
+  used in order for this version of Kon to work correctly (it is included in the zip and in both 
+  src folders).
+- Improved and fixed the PING/PONG so that it finally sends the correct information back
+- Improved most of the IRC code.  The ReceiveData() method now uses a combination of IF/ELSE 
+  and SWITCH statements to determine what the server messages are showing up (for example "PING" 
+  or "PRIVMSG", etc).  This was changed from pure IF/ELSE.
+- Added multiple methods to handle various messages (QUIT method, PRIVMSG method, etc)
+- Added a reconnect() method.  ** It is in testing stages right now and may not work completely
+  right.
+- Added try/catch to the logger method to try and prevent certain errors
+- Changed the way the log file works slightly to try and prevent exceptions and to just improve it
+- Added an authorize() method and made it so that submitting the user and nick are now in that
+  method
+- Fixed an exception that kept being thrown when quitting
+- Removed the "full path" stuff from the main function when generating and reading the config file.
+  This will hopefully stop a bug that keeps appearing.
+- Changed Kon's AI line grabbing method to include a seed based on the computer's time instead of 
+  letting the computer do it manually.  
+- Changed Kon's AI filter a little bit to not include lines that are less than 5 characters in
+  length.
+- Added the ability for Kon to address random channel users instead of just the person talking 
+  to him.
+- Changed the location of the replace emoticon functions from AI.cs to filter.cs.
+- Added the very first version of "LB Brain" -- a brain that's based on BishounenNightBird (from
+  Esper.net)'s "Language Bot" (LB).  Mine isn't 100% like his, but it's close enough.
+- Changed "UNNAMED USER" to "UNNAMED_USER" to resolve conflicting problems in LB Brain.
+- Added a /raw console command that sends things directly to the server
+- Changed the way it replaces UNNAMED_USER so that if it's UNNAMED_USER: it will address the person
+  talking to the bot.  Other UNNAMED_USERs will still be replaced with a random person.
+
+1.0.7
+- Fixed an error when you toggle the LB brain off that caused the bot to crash.
+- Fixed an error with !LBinfo when the LB brain wasn't loaded.
+- Tried to fix the reconnect command, again.
+- Seperated the IncomingCommand method into its own file.
+- Seperated the ConsoleCommand method into its own file.
+- Seperated the logging method into its own file.
+- Added !konInfo to the list of commands.  This will send the version information to the channel.
+- Changed the way the LB brain works by seperating questions and statements.  Now when someone
+  asks a question to the bot, it will reply with a statement (a non-question).  Otherwise, it'll be
+  random whether or not it asks a question or replies with a statement.
+- Fixed a channel user list bug that wasn't showing the list of channel users after someone talked
+  to the bot for the first time.  
+- Added a !channelusers  command that will display all the users in the channel (for
+  testing purposes) ** warning: don't use this command in an extremely busy channel with a ton 
+  of users (more than 30) or else it might crash the bot.
+- Added an !utter command that will Kon to randomly say something to the channel.
+- Added an admin section to the config file.  <admin>YOURNICKGOESHERE</admin>   Admins 
+  have access to all commands and have the ability to add 'users' to the list.
+- Commands have been broken down by type: admin only, users, anyone.  
+  ADMIN ONLY commands:  !addUser (nick), !remUser (nick),  !quit
+  ADMIN AND USERS ONLY commands: !reloadAIML, !toggleAIML, !toggleGoogle, 
+                                 !toggleLB, !channelUsers, !utter
+  ANYONE commands: !splash, !konInfo, !brainInfo, !LBinfo
+- Fixed a bug in previous versions where Kon would spout two responses for one input line.
+- Fixed a bug that caused Kon to reply to the main channel when someone messaged him in private.  
+  Now he will respond to private messages by messaging the person who is talking to him.
+
+1.0.8
+- Fixed an error so that Kon can now respond to null messages addressed to him.
+- Fixed the "Google Brain" so that it works again with the new way Google displays results.  
+- Started a grammar fixing function that will attempt to fix certain grammar issues (such as 
+  "am you" to "are you").  Right now it doesn't fix too much but that will change in later 
+  versions.
+- Added code for Kon to TRY and locate the topic in what you say directly to him.  It's still in
+  testing and may not work very well.  Once a topic will be found, Kon will try to build his
+  reply around that topic.  Note: this only works with the LB Brain and really only works well
+  if Kon has seen enough text.
+- Added a new admin and user command: !toggleTopic which will toggle the "topic search" on/off.
+- Wrote a utility for Kon called "LB Brain Utility."  For now it can reorganize the two LB brain
+  files so that all the starting sentence lines are at the top.  This will hopefully speed Kon up
+  when creating sentences.   ** Note: you must run this utility while Kon is offline.  And you
+  may want to make a backup of your brain files before running it.
+
+1.0.9
+- Fixed a small bug that prevented Kon from seeing the first word in a sentence if it could 
+  potentially be a topic of a sentence.
+- Changed the way topics are picked so that it randomly chooses one if there's more than one.
+- Changed the way topic sentences are constructed.  Now Kon tries to build the sentence AROUND the
+  topic, not START the sentence with the topic.   This may or may not work as intended. 
+- Added a little more filter to LB Brain responses to try and not end up with a lone " or misplaced
+   at the end of sentences.
+- Added the ability to have a longer depth in LB Brains. This should help in larger brain files.
+  Note old brain files cannot be converted over though they should still work.
+- Added a method to handle the appearance of PART messages.
+- Added a method to handle the appearance of NICK changes.
+- Added a method to handle the appearance of NOTICE messages.
+- Added a method to handle the appearance of MODE messages.
+- Changed the way Kon handles the JOIN display so that it can sit in multiple channels and show
+  people who join multiple channels (before it would only show the one set in the variable).
+- Added "RandomTalk" to Kon.  In the config file add the line <randomTalk>#</randomTalk> where #
+  is 1 to 100.  100 means it will randomly talk to every single line it sees, whereas 1 means 1%
+  of the time.  As with everything, this works best with LB Brain active, topic searching on and
+  a fairly decent-sized brain to work with.
+- Added the command !randomTalk [#]   By itself the command will tell the users what % is set;
+  users can also set what percent they would like it to be by adding a number from 1 to 100.
+
+1.0.10
+- Fixed a small potential bug with !utter
+- Changed !randomTalk # so that it reflects a message when the % has been changed.
+- Changed randomTalk so that setting it to 0 will really shut it off.
+- Changed the /join console command so that more than one channel can be joined.
+- Changed all commands to display the text in the channel in which the command was used.
+- Added a !join #channel command.  User level.  
+- Added a !part #channel command.  User level.   
+- Adjusted many commands to work with multiple channels rather than the defined channel.
+
+1.0.11
+- Fixed a small issue of certain modes not displaying all of the data (such as opping not showing who was opped).
+- Changed the logger and display so that it shows which channel the line appears in. I.e. [#channel] <nick> message
+- Fixed an error that would cause the bot to chop off the ":" in an emoticon if that was the first thing said in a line.
+- Added a /CLEAR command to the console.  Will clear the window of all text.
+- Worked on the reconnect code...again.
+- Added a check to stop the bot from reconnecting if it reconnects more than 5 times in a session.
+- Added method to handle the appearance of KICK messages.
+- Tried to improve how the LB Brain constructs sentences with a topic.
+- Fixed another small potential bug with !utter
+- Changed the /SAY /PART and /JOIN commands slightly. 
+   /SAY #channel message   will send a message to the channel you specify
+   /SAY message   will try to send the message to the default channel (the one it joins upon startup)
+   /PART #channel  will try to leave the channel you specify
+   /PART    will try to leave the default channel (the one it joins upon startup)
+   /JOIN #channel  still works the same, just some internal things were changed to help with the changes to the other commands.
+
+1.1.0
+- Rewrote some of the main code to better handle reconnecting.
+- Added a whole new thread to maintain and check on the connection status of the bot.
+- Added a !disconnect command, admin level
+
+1.1.1
+- Moved PingControl to its own file.
+- Fixed PingControl so that it actually pings the server as intended.
+- Added a check that will help check to see if the bot has pinged out and not realized it.  If so, it will attempt 
+  to reconnect.
+- Added <retryAttempts>#</retryAttempts> to the config file. If you want the bot to attempt to reconnect more than the
+  default 5 times, set it in here.
+- Added a new user-level command: !Dinfo      Will show a few tidbits of internal info (reconnect attempt/total, if 
+  ping control is set to true, and the # of ping attempts so far).   Really only useful for myself, but you might 
+  find it interesting.
+- Changed the reconnect time to three minutes to allow time for ghosts to ping out on the server.
+
+1.2.0
+- Added the ability for Kon to send messages to Twitter.  Right now this uses the LB Brain to construct a random
+  sentence and send it up to a twitter account.  You will need to add the following to your config file if you want
+  to use this feature:
+    <useTwitter>true</useTwitter>
+    <twitterUserName>your twitter user name goes here</twitterUserName>
+    <twitterPassword>your twitter password goes here</twitterPassword>
+  It should send a new message initially upon connecting to the IRC server and again around every hour/hour and a half
+  afterwards
+- Added a new console command.   /TwitterInfo    Will display information about the built-in twitter client.  This
+  may be expanded in the future.
+- Added a new USER-LEVEL command: !twitter    The command will return the current twitter status (if twitter client
+  is on and in use).  
+
+1.2.1
+- Fixed a minor problem with the Twitter client.
+- Made it so if the Twitter Client fails, it will write the error into KonLog.txt
+- Made it so Kon can use the newer version of Twitterizer, which in-turn should allow Kon to post on Twitter again after
+  the DOS attack they had recently.
+
+1.3.0
+- Kon should try to pick a random name when posting to twitter instead of posting "UNNAMED_USER" all the time.
+- Fixed a bug that prevented Kon from seeing every person sitting in a channel
+- Changed the way Kon replaces UNNAMED_USER so that it can use more than one person's name (randomly).
+- Changed the way Kon handles ACTIONs in twitter to replace the "ACTION" with a "*"
+- Removed Google Brain.  Google has changed the way their searches work and Google Brain is no longer functioning.
+- Removed the !toggleGoogle command due to the removal of Google Brain.
+- Added a way for Kon to attempt to string two sentences together if the first sentence is too short. Requires LB Brain.
+- Added a new command: !toggleDoubleSentences  it's a user-level command and will toggle the two sentences attempt on/off.
+- Kon will now attempt to use a simple form of punctuation in replies.  It may not always be correct, however.
+- Tried to improve the "TOPIC SEARCH" function of the LB Brain, to better pull out a topic from a sentence.
+- Improved the Word search function in the LB Brain so that word case shouldn't matter any more when addressing the bot.
+- Updated the LB Brain Utility to version 1.1.0.  Now contains an option to read a txt file and convert it into Kon's brain.
+
+1.4.0
+- Added the ability for Kon to filter out repeat sentence starters but keep the rest of the sentence when adding new lines.
+- Updated the LB Brain Utility to also filter out repeat sentence starters.
+- Improved the "KON" to "UNNAMED_USER" filtering.  Hopefully now it won't replace the word "kon" if it appears in the 
+  middle of another word.
+- Improved the word search function of the LB Brain again.
+- Continued to improve/work on the reconnect code. Specifically, the error 451 that prevents the bot from reconnecting.
+  It might actually be completely fixed this time around.
+- Added a new console command: /TOGGLEPONG   It will toggle the display of the ping/pong messages. Useful for debugging
+  in some cases.
+- Changed the way the reconnect attempts work so that it sets it to 0 when the bot actually connects to the server ala
+  most IRC clients. 
+
+1.4.1
+- Added better filtering of URLs.
+- Updated the LB Brain Utility to fix an error that was discovered after the last version release.
+- Improved Kon's ability to combine sentences together so that it will hopefully not repeat the same line twice.
+- Improved the grammer filter slightly.
+- Added the ability for Kon to respond to CTCP PING requests done by users.
+- Added the ability for Kon to respond to CTCP VERSION requests.
+ 
+1.4.2
+- Fixed a very minor mistake in which the LB Brain wasn't actually searching the entire sentence for the key word like it
+  was supposed to.
+- Kon can not attempt to use two key words in a conversation to try to create a "topic" to use to create his response.
+
+1.4.3
+- Changed the way Kon handles "(" and ")" in sentences.  If a "(" is found but no ")" then it will add the closing ")" but
+  if a ")" is found but no "(" is found, then it will remove the ")" -- This should help clean up sentences a bit.
+- Kon is now using Twitterizer version 2.3.0.  The old dll is no longer needed.  Twitterizer2.dll and Newtonsoft.Json.dll are.
+- Fixed the Twitter aspect to work with the new Oauth system.  It's a bit complicated should you want to hook Kon up to your
+  own account to post now.  I'll explain in the readme.txt.  Please read it if you're interested.
+- Updated Kon so that it must now have .net Framework version 3.5 installed to run.
+- Set a final effort to replace UNNAMED_USER in tweets if the original method does not catch it.
+- Updated the LB Brain again.  I'm not really sure if this upgrade will make it better or worse.  
+  Some replies might be slower as it constructs its sentences (especially if your brain file is bigger).  However, it
+  now tries to go backwards as well as forwards when constructing sentences to help better construct full sentences.
+
+1.5.0
+- Changed the way the LB Brain is once again.  Questions and statements are no longer separated.  This means you'll have
+  to start over with your brain files as the old ones will no longer work.  
+- Added "Answer Search"
+- Added <ident>IRC ident here</ident> to the config file.  Use it to control the ident of the bot.
+- Added <realname>user'sRealNameHere</realName> to the config file.  Use it to control the real name of the bot.
+
+1.5.1
+- Added a /MSG console command.  Use it like so: /MSG person message
+- Fixed the ident and RealName upon connecting the bot.  They should be in the right spot now.
+- Fixed the RealName so that it doesn't show the server any more in it.
+
+1.5.2
+- Added another way to address the bot.  Now if you just use the bot's name at the start of a sentence it will 
+  act the same way as if you were using bot:  
+- Added an auto-perform command.  Here's how it works.  Open perform.kon in your favorite plain text editor (notepad
+  will do fine).  The commands recognized are: JOIN, MSG, SAY and WAIT.  Use one command on one line each. Examples:
+   JOIN #channel 
+   SAY #channel yo dawg!
+   MSG Nickserv identify password
+   WAIT   <--  this command causes the bot to pause inbetween commands for a few seconds.  Use this if you have a lot
+               so that you don't cause the bot to flood and be disconnected.
+   RAW    <--  Can use this to send raw IRC commands to the server to cover anything else you may want to do.
+  * If you use MYBOTNAME (in all caps like that) it will replace it with the bot's current nick on the server.
+  If you're still confused, I've included a sample perform file as perform.kon.example.  
+- Added the ability for the bot to recognize multiple admins in the config file.  
+- Added a new ADMIN LEVEL command: !Msg   Use it like  !msg #chan/person message
+- Added a new ADMIN level command: !Raw   Use it like  !raw RAW IRC COMMAND USAGE HERE
+- Updated the filter a little bit.
+- Updated the LB Brain Utility to version 1.2.1.
+- Fixed a bug with the !randomTalk command.
+- Fixed a bug in which Random Talk was not working correctly.
