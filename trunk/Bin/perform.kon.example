@@ -1,0 +1,4 @@
+JOIN #KonBot
+MSG nickserv identify mypassword
+WAIT
+SAY #KonBot HELLO WORLD! I am MYBOTNAME

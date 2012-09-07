@@ -1,0 +1,15 @@
+<config>
+      <server>bots.esper.net</server>
+      <port>6667</port>
+      <ident>splash</ident>
+      <realName>Kon</realName>
+      <mainNick>KonBot</mainNick>
+      <backupNick>KonPlushie</backupNick>
+      <channel>#konBot</channel>
+      <randomTalk>1</randomTalk>
+      <retryAttempts>5</retryAttempts>
+      <admin>WriteYourNickHere</admin>
+      <useTwitter>false</useTwitter>
+      <twitterAccessToken>Your twitter account access token goes here</twitterAccessToken>
+      <twitterAccessTokenSecret>Your twitter account access token secret goes here</twitterAccessTokenSecret>
+</config>
