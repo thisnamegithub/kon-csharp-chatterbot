@@ -12,7 +12,7 @@
 // Emails: jmp1139@my.gulfcoast.edu           //
 //         Iyouboushi@gmail.com               //
 ////////////////////////////////////////////////
-// This file was last updated on: 12/15/2011  //
+// This file was last updated on: 08/11/2013  //
 ////////////////////////////////////////////////
 
 
@@ -23,7 +23,6 @@ using System.Threading;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
-using Twitterizer;
 
 namespace Kon
 {
@@ -104,7 +103,7 @@ namespace Kon
             connect();
         }
 
-        public IRC(String server, int port, String mainNick, String backupNick, String chan, int randomTalkPercent, int retry, bool twitterUse, String tAccessToken, String tAccessTokenSecret, String incomingIdent, String incomingRealName)
+        public IRC(String server, int port, String mainNick, String backupNick, String chan, int randomTalkPercent, int retry, bool twitterUse, String tAccessToken, String tAccessTokenSecret, String tOATHAccessToken, String tOATHTokenSecret, String incomingIdent, String incomingRealName)
         {
             // Validate the incoming information.  Keep in mind that if any of these are wrong it 
             // will use defaults defined at the top of this file.
@@ -126,25 +125,18 @@ namespace Kon
             ident = incomingIdent;
             realName = incomingRealName;
 
+            // Check to see if we need to turn on the log file.
+            LogFileOn();
+
             if (twitterUse)
             {
-                if ((tAccessToken != "null") && (tAccessTokenSecret != "null"))
+                if ((((tAccessToken != "null") && (tAccessTokenSecret != "null") && (tOATHAccessToken != "null") && (tOATHTokenSecret != "null"))))
                 {
                     useTwitter = true;
                     twitterAccessToken = tAccessToken;
                     twitterAccessTokenSecret = tAccessTokenSecret;
-
-                    try
-                    {
-                        token.AccessToken = twitterAccessToken;
-                        token.AccessTokenSecret = twitterAccessTokenSecret;
-                        token.ConsumerKey = "DsiZYDZooD1nCxci6cOXQ";
-                        token.ConsumerSecret = "3gFYVJWhutrdH1ZYqA3BaWVulYVGk7WWgTXm5bJU6qI";
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.ToString());
-                    }
+                    oauth_consumer_key = tOATHAccessToken;
+                    oauth_consumer_secret = tOATHTokenSecret;
 
                     // Now turn the Twitter Client on.
                     TwitterControl();
@@ -152,10 +144,6 @@ namespace Kon
                 else
                     useTwitter = false;
             }
-
-
-            // Check to see if we need to turn on the log file.
-            LogFileOn();
 
             try
             {
@@ -171,6 +159,7 @@ namespace Kon
                 Thread.Sleep(15000);
                 setConnectionState(false);
             }
+
         }
 
 #endregion
@@ -232,13 +221,13 @@ namespace Kon
                 setConnectionState(false);
             }
 
-
             Thread.Sleep(1000);
             // Let's turn on the twitter client, if it needs to be turned on.
             if (useTwitter)
             {
                 twitterClientOn = true;
                 Thread.Sleep(500);
+
                 sendInitialTwitterMessage();
             }
         }
