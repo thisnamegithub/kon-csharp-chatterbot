@@ -46,7 +46,7 @@ namespace Kon
         private        string          nickNameBckup       = "KonPlushie";
         private        string          tempNick            = "";
         private        string          channel             = "#KonBot";
-        private        string          version             = "Kon - Version 1.5.2 - created by James Iyouboushi [iyouboushi@gmail.com]";
+        private        string          version             = "Kon - Version 1.5.3 - created by James Iyouboushi [iyouboushi@gmail.com]";
         private        string          modifiedLine        = "";
         private        string          rawLine             = "";
         private        string          channelUsers;
