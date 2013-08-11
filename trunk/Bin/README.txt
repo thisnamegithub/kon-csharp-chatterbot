@@ -1,5 +1,5 @@
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-Kon the C# Chatterbot - Version 1.5.2
+Kon the C# Chatterbot - Version 1.5.3
 Programmed by James "Iyouboushi" (Iyouboushi@gmail.com)
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -207,6 +207,11 @@ Will display the number of lines in its basic brain.
 Will display the number of lines in the LB Brain.  LB Brain must be on in
 order to use this command.
 
+!haiku
+Will cause the bot to attempt to create a haiku using the 5/7/5 syllable structure.  It's not
+perfect and the counts will often be a little off but it's a start. Needs the LB Brain to be
+on in order to work properly.
+
 
  _______________________________________________________________________
 /                                                                       \
@@ -257,9 +262,7 @@ to work (i.e. MYBOTNAME not MyBotName or some other variation).
 
 For a complete list, read changelog.txt.
 
-* Added auto perform to the bot.
-* Added another way to address the bot. 
-* Updated the filter a little bit.
+* 
 
  _______________________________________________________________________
 /                                                                       \
