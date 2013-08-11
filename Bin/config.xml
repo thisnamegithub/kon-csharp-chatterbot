@@ -12,4 +12,8 @@
       <useTwitter>false</useTwitter>
       <twitterAccessToken>Your twitter account access token goes here</twitterAccessToken>
       <twitterAccessTokenSecret>Your twitter account access token secret goes here</twitterAccessTokenSecret>
+      <twitterAccessToken>Your twitter account access token goes here</twitterAccessToken>
+      <twitterAccessTokenSecret>Your twitter account access token secret goes here</twitterAccessTokenSecret>
+      <twitterOATHAccessToken>Your twitter account OATH access token goes here</twitterOATHAccessToken>
+      <twitterOATHTokenSecret>Your twitter account OATH access token secret goes here</twitterOATHTokenSecret>
 </config>
