@@ -12,7 +12,7 @@
 // Emails: jmp1139@my.gulfcoast.edu           //
 //         Iyouboushi@gmail.com               //
 ////////////////////////////////////////////////
-// This file was last updated on: 12/02/2011  //
+// This file was last updated on: 08/11/2013  //
 ////////////////////////////////////////////////
 
 using System;
@@ -79,6 +79,8 @@ namespace Kon
             String channel = getData(fullpath, "channel");
             String twitterAccessToken = "";
             String twitterAccessTokenSecret = "";
+            String twitterOATHAccessToken = "";
+            String twitterOATHTokenSecret = "";
             String ident = "";
             String realName = "";
             bool useTwitter = false;
@@ -153,6 +155,26 @@ namespace Kon
 
             try
             {
+                twitterOATHAccessToken = getData(fullpath, "twitterOATHAccessToken");
+            }
+            catch (Exception e)
+            {
+                twitterOATHAccessToken = "null";
+                useTwitter = false;
+            }
+
+            try
+            {
+                twitterOATHTokenSecret = getData(fullpath, "twitterOATHTokenSecret");
+            }
+            catch (Exception e)
+            {
+                twitterOATHTokenSecret = "null";
+                useTwitter = false;
+            }
+
+            try
+            {
                 ident = getData(fullpath, "ident");
             }
             catch (Exception e)
@@ -172,7 +194,7 @@ namespace Kon
 #endregion
 
             IRC irc;
-            irc = new IRC(server, port, mainNick, backupNick, channel, randomTalk, retryAttempts, useTwitter, twitterAccessToken, twitterAccessTokenSecret, ident, realName);
+            irc = new IRC(server, port, mainNick, backupNick, channel, randomTalk, retryAttempts, useTwitter, twitterAccessToken, twitterAccessTokenSecret, twitterOATHAccessToken, twitterOATHTokenSecret, ident, realName);
 
             bool programCanQuit = false;
             bool connected;
@@ -267,14 +289,24 @@ namespace Kon
                 configWriter.WriteString("false");
                 configWriter.WriteEndElement();
 
-                // Twitter user-name.
+                // Twitter access token.
                 configWriter.WriteStartElement("", "twitterAccessToken", "");
                 configWriter.WriteString("Your twitter account access token goes here");
                 configWriter.WriteEndElement();
 
-                // Twitter password
+                // Twitter token secret
                 configWriter.WriteStartElement("", "twitterAccessTokenSecret", "");
                 configWriter.WriteString("Your twitter account access token secret goes here");
+                configWriter.WriteEndElement();
+
+                // Twitter OATH Access Token
+                configWriter.WriteStartElement("", "twitterOATHAccessToken", "");
+                configWriter.WriteString("Your twitter account OATH access token goes here");
+                configWriter.WriteEndElement();
+
+                // Twitter OATH Access Token Secret
+                configWriter.WriteStartElement("", "twitterOATHTokenSecret", "");
+                configWriter.WriteString("Your twitter account OATH access token secret goes here");
                 configWriter.WriteEndElement();
 
                 // End the file

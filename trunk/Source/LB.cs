@@ -18,7 +18,7 @@
 // Emails: jmp1139@my.gulfcoast.edu           //
 //         Iyouboushi@gmail.com               //
 ////////////////////////////////////////////////
-// This file was last updated on: 7/07/2011  //
+// This file was last updated on: 8/11/2013  //
 ////////////////////////////////////////////////
 
 using System;
@@ -955,6 +955,80 @@ namespace Kon
             return randomLine;
         }
 #endregion
+
+#region Haiku
+        public static string generateHaiku(string inputLine)
+        {
+            // Haiku = 5 / 7 / 5
+
+            String haikuLine = "";
+            String haiku1 = "";
+            String haiku2 = "";
+            String haiku3 = "";
+
+            String haiku2Temp = totalNonsense();
+            String haiku3Temp = totalNonsense();
+
+            haiku1 = generateHaikuLine(5, inputLine);
+            haiku2 = generateHaikuLine(7, haiku1);
+            haiku3 = generateHaikuLine(5, haiku2);
+
+            haikuLine = haiku1 + " / " + haiku2 + " / " + haiku3;
+
+
+            haikuLine = haikuLine.Replace("(", "");
+            haikuLine = haikuLine.Replace(")", "");
+            haikuLine = haikuLine.Replace("*", "");
+
+            return haikuLine;
+
+        }
+
+        private static int syllableCount(string word)
+        {
+            word = word.ToLower().Trim();
+            int count = System.Text.RegularExpressions.Regex.Matches(word, "[aeiouy]+").Count;
+            if ((word.EndsWith("e") || (word.EndsWith("es") || word.EndsWith("ed"))) && !word.EndsWith("le"))
+                count--;
+            return count;
+        }
+
+        private static string generateHaikuLine(int maxSyllable, string inputLine)
+        {
+            int syllableTotal = 0;
+            string line = "";
+                   
+          //  String haikuTemp = totalNonsense();
+            if (inputLine == "") { inputLine = "thisisjustatestyoushouldn'thaveanylinesinthislulz"; }
+            String haikuTemp = IRC.myLB.pullFromBrain(inputLine, false);
+
+            string[] nonsenseLine;
+            String currentWord;
+            nonsenseLine = haikuTemp.Split(new char[] { ' ' });
+            int lastWordPos = (nonsenseLine.Length - 1);
+            int currentWordNumber = 0;
+            do
+            {
+                if (currentWordNumber <= lastWordPos)
+                {
+                    currentWord = nonsenseLine[currentWordNumber];
+                    syllableTotal = syllableTotal + syllableCount(currentWord);
+                    if (line != "") { line = line + " " + currentWord; }
+                    if (line == "") { line = currentWord; }
+                    currentWordNumber++;
+                }
+                if (currentWordNumber > lastWordPos)
+                {
+                    syllableTotal = maxSyllable;
+                }
+
+            } while (syllableTotal < maxSyllable);
+
+            return line;
+        }
+
+#endregion
+
 
     }
 }

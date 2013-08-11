@@ -12,7 +12,7 @@
 // Emails: jmp1139@my.gulfcoast.edu           //
 //         Iyouboushi@gmail.com               //
 ////////////////////////////////////////////////
-// This file was last updated on: 12/08/2011  //
+// This file was last updated on: 08/11/2013  //
 ////////////////////////////////////////////////
 
 using System;
@@ -22,8 +22,6 @@ using System.Net;
 using System.IO;
 using System.Collections;
 using System.Xml;
-using Twitterizer;
-
 
 
 namespace Kon
@@ -53,6 +51,7 @@ namespace Kon
         // !toggleAnswerSearch                         //
         // ALL LEVEL:                                  //
         // !splash, !konInfo, !brainInfo, !LBinfo      //
+        // !haiku                                      //
         /////////////////////////////////////////////////
 
 
@@ -97,7 +96,7 @@ namespace Kon
 
             if (((command == "!ADDUSER") || (command == "!REMUSER") || (command == "!RANDOMTALK") || (command == "!JOIN") || (command == "!PART")))
                 userCommand(command, commandString[1].ToString(), nick, location);
-            else if (((command == "!RAW") || (command == "!MSG") || (command == "!MSN")))
+            else if ((((command == "!RAW") || (command == "!MSG") || (command == "!HAIKU") || (command == "!MSN"))))
                 userCommand(command, message, nick, location);
             else
                 userCommand(command, " ", nick, location);
@@ -305,6 +304,32 @@ namespace Kon
                 Console.WriteLine(">> " + channel + " : Kon Splash!");
             }
 
+            // Haiku!.
+            if (command == "!HAIKU")
+            {
+                if (LB)
+                {
+                    String inputMessage = "";
+
+                    if (commandParam != "")
+                    {
+                        string[] messageLine = commandParam.Split(new char[] { ' ' });
+                        int msgLength = messageLine.Length - 1;
+                        for (int i = 1; i <= msgLength; i++)
+                        {
+                            inputMessage = inputMessage + messageLine[i] + " ";
+                        }
+                    }
+
+                    inputMessage = inputMessage.Trim();
+                    string haiku = LBbrain.generateHaiku(inputMessage);
+                    sendToChannel(haiku, location);
+                }
+                else
+                    sendToChannel("4LB Brain not active and the Haiku cannot be generated", location);
+            }
+
+
             if (command == "!BRAININFO")
             {
                 sendToChannel("My brain contains " + myAI.getBrainLength() + " lines.", location);
@@ -435,7 +460,7 @@ namespace Kon
                 else
                     sendToChannel("4You do not have access to this command.", location);
             }
-
+            
             if (command == "!JOIN")
             {
                 if ((isUser(nick)) || (isAdmin(nick)))
