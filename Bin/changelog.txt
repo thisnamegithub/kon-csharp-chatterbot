@@ -255,7 +255,7 @@
 - Added another way to address the bot.  Now if you just use the bot's name at the start of a sentence it will 
   act the same way as if you were using bot:  
 - Added an auto-perform command.  Here's how it works.  Open perform.kon in your favorite plain text editor (notepad
-  will do fine).  The commands recognized are: JOIN, MSG, SAY and WAIT.  Use one command on one line each. Examples:
+  will do fine).  The commands recognized are: JOIN, MSG, SAY, RAW and WAIT.  Use one command on one line each. Examples:
    JOIN #channel 
    SAY #channel yo dawg!
    MSG Nickserv identify password
@@ -271,3 +271,11 @@
 - Updated the LB Brain Utility to version 1.2.1.
 - Fixed a bug with the !randomTalk command.
 - Fixed a bug in which Random Talk was not working correctly.
+
+1.5.3
+- Added the USER LEVEL command: !haiku  This command will cause the bot to attempt to create a haiku using the 
+  5/7/5 syllable structure. It's not perfect and the counts will often be a little off but it's a start. Needs the 
+  LB Brain to be on in order to work properly.
+- Changed the "Answer Search" code slightly so that it tries to find more than one answer to the same line.  This may or may not
+  help/improve anything.
+- Fixed the Twitter aspect so that it works with the 1.1 OATH system.
