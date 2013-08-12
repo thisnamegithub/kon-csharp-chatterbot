@@ -966,16 +966,15 @@ namespace Kon
             String haiku2 = "";
             String haiku3 = "";
 
-            String haiku2Temp = totalNonsense();
-            String haiku3Temp = totalNonsense();
+          //  String haiku2Temp = totalNonsense();
+          //  String haiku3Temp = totalNonsense();
 
             haiku1 = generateHaikuLine(5, inputLine);
             haiku2 = generateHaikuLine(7, haiku1);
             haiku3 = generateHaikuLine(5, haiku2);
 
             haikuLine = haiku1 + " / " + haiku2 + " / " + haiku3;
-
-
+            
             haikuLine = haikuLine.Replace("(", "");
             haikuLine = haikuLine.Replace(")", "");
             haikuLine = haikuLine.Replace("*", "");
