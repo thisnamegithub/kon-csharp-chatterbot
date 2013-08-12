@@ -112,10 +112,18 @@ namespace Kon
                         // Update Twitter
                         if (twitterMessage != "")
                         {
-                            twitterSendTweet();
+                            try
+                            {
+                                twitterSendTweet();
 
-                            if (showTwitterMessages)
-                                Console.WriteLine(">> TWITTER : " + twitterMessage);
+                                if (showTwitterMessages)
+                                    Console.WriteLine(">> TWITTER : " + twitterMessage);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Error in sending the tweet. " + e.ToString());
+                                logger.WriteLine(e.ToString());
+                            }
                         }
                         else
                             System.Console.WriteLine("Error: no message to send to Twitter");
