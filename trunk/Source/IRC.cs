@@ -12,7 +12,7 @@
 // Emails: jmp1139@my.gulfcoast.edu           //
 //         Iyouboushi@gmail.com               //
 ////////////////////////////////////////////////
-// This file was last updated on: 08/11/2013  //
+// This file was last updated on: 08/13/2013  //
 ////////////////////////////////////////////////
 
 
@@ -73,7 +73,6 @@ namespace Kon
         private static StreamReader    reader;
         private static AIMLbrain       myAIML;             // Kon's AIML brain (AIML.cs)
         public  static LBbrain         myLB;               // Kon's LB Brain (LB.cs)
-    //    private static msn             msnClient;          // Kon's MSN client (msn.cs)
         private        Random          randnum             = new Random();
         
         // Private constants
@@ -996,11 +995,11 @@ namespace Kon
                         switch (commandSwitch)
                         {
                             case "WAIT":
-                                Thread.Sleep(2000);
+                                Thread.Sleep(3000);
                                 break;
                             case "JOIN":
                                 join(IncomingCommand[1].ToString());
-                                Thread.Sleep(100);
+                                Thread.Sleep(1000);
                               break;
                             case "SAY":
                             case "MSG":

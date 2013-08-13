@@ -46,12 +46,13 @@ namespace Kon
         private        string       previousSearch           = "";
         private        bool         shortDepth               = false;
         private        bool         oldStyleTopicSearch      = false;
-        private        string[]     commonWords              = { "THERE", "THAT", "THIS", "HERE", "YOUR", "THEY", "IT'S", "OTHER", "HAVE", "STILL", "VERY", "THEIR", "ITS", "WHY", "HOW", "WHO" };
+        private        string[]     commonWords              = { "THERE", "THAT", "THIS", "HERE", "YOUR", "THEY", "IT'S", "OTHER", "HAVE", "STILL", "VERY", "THEIR", "ITS", "WHY", "HOW", "WHO", "ARE", "MY" };
         private        string[]     questionWords            = { "WHO", "WHAT", "WHERE ARE ", "WHERE IS ", "WHERE DO ", "WHEN ARE", "WHEN IS", "WHY", "HOW", "ARE", "CAN", "SHOULD", "WHICH", "WILL ", "WHOSE", "WHO'S", "ISN'T", "IS ", "DO ", "Y U NO ", "WONDER WHAT", "SO, WHY", "SO WHY", "DID THEY" };
-        private const String        regExPattern             = @".*?(?<kon>.*?)(?<character>.*?).*?";
-        private       String        keyword1;
-        private       String        keyword2;
-        private       String        conversationOriginal     = "";
+        private        ArrayList    startingLines;
+        private const  String        regExPattern             = @".*?(?<kon>.*?)(?<character>.*?).*?";
+        private        String        keyword1;
+        private        String        keyword2;
+        private        String        conversationOriginal     = "";
 
 #endregion
 
@@ -59,6 +60,20 @@ namespace Kon
         {
             // Let's start filtering out some stuff.
             filter = new Filter();
+
+            // Create a list of all the starting lines in the brain file.
+            startingLines = new ArrayList();
+            string line;
+
+            using (StreamReader brainFile = File.OpenText(BRAIN_FILE))
+            {
+                while ((line = brainFile.ReadLine()) != null)
+                {
+                    if (line.StartsWith("START_SENTENCE"))
+                        startingLines.Add(line.ToUpper());
+                }
+                brainFile.Close();
+            }
         }
 
 #region Add To Brain
@@ -101,21 +116,6 @@ namespace Kon
 
                 // One last thing we have to filter out.
                 conversation = filter.replaceWithNull_Punctuation_ForLBBrain(conversation);
-
-               // Let's get a list of all the starting sentences.. will be used later to filter out repeat sentence starters.
-                string line;
-                ArrayList startingLines = new ArrayList();
-
-
-                using (StreamReader brainFile = File.OpenText(BRAIN_FILE))
-                {
-                    while ((line = brainFile.ReadLine()) != null)
-                    {
-                        if (line.StartsWith("START_SENTENCE"))
-                            startingLines.Add(line.ToUpper());
-                    }
-                    brainFile.Close();
-                }
 
                 // Let's open the brain file and get ready to add stuff.
                 brain = new StreamWriter(BRAIN_FILE, true);
@@ -186,7 +186,10 @@ namespace Kon
                                 startingLine = "START_SENTENCE " + messageArray[i] + " " + messageArray[i + 1] + " " + messageArray[i + 2];
 
                             if (!startingLines.Contains(startingLine.ToUpper()))
+                            {
                                 brain.WriteLine(startingLine);
+                                startingLines.Add(startingLine);
+                            }
 
                             brain.Flush();
                         }
@@ -462,7 +465,7 @@ namespace Kon
 #region getStartingSentence()
         private String getStartingSentence(string convoStart)
         {
-            ArrayList startingLines = new ArrayList();
+            ArrayList startingSentenceLines = new ArrayList();
             string line = "";
             int numberOfLines;
             
@@ -476,7 +479,7 @@ namespace Kon
                         string upperLine = line.ToUpper();
 
                         if (upperLine.StartsWith(convoStart.ToUpper()))
-                            startingLines.Add(line);
+                            startingSentenceLines.Add(line);
                     }
                     brainFile.Close();
                 }
@@ -485,28 +488,18 @@ namespace Kon
           
             // If no starting sentence was found that relates to the topic we need to pick a random one.
 
-            if (startingLines.Count == 0)
+            if (startingSentenceLines.Count == 0)
             {
-                using (StreamReader brainFile = File.OpenText(BRAIN_FILE))
-                {
-                    while ((line = brainFile.ReadLine()) != null)
-                    {
-                        if (line.StartsWith("START_SENTENCE"))
-                            startingLines.Add(line);
-                    }
-                    brainFile.Close();
-                }
+                startingSentenceLines = startingLines;
             }
             
-            
-            numberOfLines = startingLines.Count;
+            numberOfLines = startingSentenceLines.Count;
             
             // Now we need to randomly pick a line and pull a line.
             Thread.Sleep(50);
             int rnd = randnum.Next(numberOfLines);
-            string randomStart = (string)startingLines[rnd];
-            
-            
+            string randomStart = (string)startingSentenceLines[rnd];
+                        
             return randomStart;
         }
 
@@ -552,7 +545,7 @@ namespace Kon
         {
             if (currentLine != "")
             {
-                ArrayList startingLines = new ArrayList();
+                ArrayList startingTopicLines = new ArrayList();
                 string line = "";
                 int numberOfLines;
 
@@ -569,21 +562,21 @@ namespace Kon
                          {
                              keyword2 = filter.replaceWithNull_Punctuation(keyword2);
                              if (lineWithoutPunct.ToUpper().Contains(keyword1.ToUpper()) && lineWithoutPunct.ToUpper().Contains(keyword2.ToUpper()))
-                                 startingLines.Add(line);
+                                 startingTopicLines.Add(line);
                          }
                        
                          else
                          {
 
                              if (lineWithoutPunct.ToUpper().Contains(keyword1.ToUpper()))
-                                 startingLines.Add(line);
+                                 startingTopicLines.Add(line);
                          }
                     }
                     brainFile.Close();
                 }
 
 
-                numberOfLines = startingLines.Count;
+                numberOfLines = startingTopicLines.Count;
 
                 // If we find no lines, then let's attempt to find a line that STARTS with it..
                 if ((numberOfLines == 0) && (keyword2 == ""))
@@ -599,13 +592,13 @@ namespace Kon
                         {
                             lineWithoutPunct = filter.replaceWithNull_Punctuation(line);
                             if (lineWithoutPunct.ToUpper().Contains(keyword1.ToUpper()))
-                                startingLines.Add(line);
+                                startingTopicLines.Add(line);
                         }
 
                         brainFile.Close();
                     }
                 }
-                numberOfLines = startingLines.Count;
+                numberOfLines = startingTopicLines.Count;
 
 
                 if (numberOfLines == 0)
@@ -617,7 +610,7 @@ namespace Kon
                     // Now we need to randomly pick a line and pull a line.
                     Thread.Sleep(50);
                     int rnd = randnum.Next(numberOfLines);
-                    currentLine = (string)startingLines[rnd];
+                    currentLine = (string)startingTopicLines[rnd];
                 }
             }
 
@@ -711,30 +704,6 @@ namespace Kon
             }
         }
 #endregion
-
-
-#region getBrainLength()
-        public int getBrainLength()
-        {
-            int totalCount = 0;
-            using (StreamReader brainFile = File.OpenText(BRAIN_FILE))
-            {
-                // This will add all of the lines in the brain file to an array so we can count them
-                ArrayList lines = new ArrayList();
-                string line;
-
-                while ((line = brainFile.ReadLine()) != null)
-                    lines.Add(line);
-
-                brainFile.Close();
-
-                totalCount = lines.Count;
-            }
-
-            return totalCount;
-        }
-#endregion
-
 
 #region DoAnswerSearch
         string doAnswerSearch(string originalConversation)
@@ -918,9 +887,6 @@ namespace Kon
             String haiku2 = "";
             String haiku3 = "";
 
-          //  String haiku2Temp = totalNonsense();
-          //  String haiku3Temp = totalNonsense();
-
             haiku1 = generateHaikuLine(5, inputLine);
             haiku2 = generateHaikuLine(7, haiku1);
             haiku3 = generateHaikuLine(5, haiku2);
@@ -930,6 +896,7 @@ namespace Kon
             haikuLine = haikuLine.Replace("(", "");
             haikuLine = haikuLine.Replace(")", "");
             haikuLine = haikuLine.Replace("*", "");
+            haikuLine = haikuLine.Replace("ACTION ", "");
 
             return haikuLine;
 
@@ -978,6 +945,28 @@ namespace Kon
             return line;
         }
 
+#endregion
+
+#region getBrainLength()
+        public int getBrainLength()
+        {
+            int totalCount = 0;
+            using (StreamReader brainFile = File.OpenText(BRAIN_FILE))
+            {
+                // This will add all of the lines in the brain file to an array so we can count them
+                ArrayList lines = new ArrayList();
+                string line;
+
+                while ((line = brainFile.ReadLine()) != null)
+                    lines.Add(line);
+
+                brainFile.Close();
+
+                totalCount = lines.Count;
+            }
+
+            return totalCount;
+        }
 #endregion
 
 

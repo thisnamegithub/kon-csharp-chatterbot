@@ -262,7 +262,12 @@ to work (i.e. MYBOTNAME not MyBotName or some other variation).
 
 For a complete list, read changelog.txt.
 
-* 
+* Added the USER LEVEL command: !haiku  This command will cause the bot to attempt to 
+  create a haiku using the 5/7/5 syllable structure. It's not perfect and the counts 
+  will often be a little off but it's a start. Needs the LB Brain to be on in order 
+  to work properly.
+
+* Fixed the Twitter aspect so that it works with the 1.1 OATH system.
 
  _______________________________________________________________________
 /                                                                       \
@@ -287,10 +292,26 @@ http://iyouboushi.com/projects/programs/c/kon/
 Make sure the application has read and write access.
 
 Finish with that.  Now click on the application to get the information 
-about it.  Scroll to the bottom of that page and you'll see
-"Your access token".  Open Kon's config.xml and look for
-<twitterAccessToken>  now copy the access token string inbetween the xml item.
-Now do the same with <twitterAccessTokenSecret>
+about it.  Scroll to the bottom of that page and you'll see a bunch of
+keys, secrets, and tokens.
+
+Open the config.xml and look for the four twitter settings:
+
+  <twitterAccessToken>
+  <twitterAccessTokenSecret>
+  <twitterOATHAccessToken>
+  <twitterOATHTokenSecret>
+
+Add the values from Twitter.
+
+Twitter Access Token is "Access token"
+
+Twitter Access Token Secret is "Access token secret"
+
+Twitter OATH Access Token is "Consumer key"
+
+Twitter OATH Access Token Secret is "Consumer secret"
+
 
 Make sure <useTwitter> is set to True.
 
