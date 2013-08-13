@@ -59,7 +59,7 @@ namespace Kon
                 FileStream fs = null;
                 using (fs = File.Create(fullPerformPath)) { }
                 System.Console.WriteLine("You can edit this file in notepad or another simple text editor.\n");
-                System.Console.WriteLine("Perform commands recognized: JOIN, MSG, SAY, WAIT\n");
+                System.Console.WriteLine("Perform commands recognized: JOIN, MSG, SAY, WAIT, RAW\n");
                 Thread.Sleep(2000);
             }
 
@@ -141,6 +141,7 @@ namespace Kon
             {
                 twitterAccessToken = "null";
                 useTwitter = false;
+                Console.WriteLine(e.ToString());
             }
 
             try
@@ -151,6 +152,7 @@ namespace Kon
             {
                 twitterAccessTokenSecret = "null";
                 useTwitter = false;
+                Console.WriteLine(e.ToString());
             }
 
             try
@@ -161,6 +163,7 @@ namespace Kon
             {
                 twitterOATHAccessToken = "null";
                 useTwitter = false;
+                Console.WriteLine(e.ToString());
             }
 
             try
@@ -171,6 +174,7 @@ namespace Kon
             {
                 twitterOATHTokenSecret = "null";
                 useTwitter = false;
+                Console.WriteLine(e.ToString());
             }
 
             try
@@ -180,6 +184,7 @@ namespace Kon
             catch (Exception e)
             {
                 ident = "Splash !!!";
+                Console.WriteLine(e.ToString());
             }
 
             try
@@ -189,6 +194,7 @@ namespace Kon
             catch (Exception e)
             {
                 realName = "Kon";
+                Console.WriteLine(e.ToString());
             }
 
 #endregion

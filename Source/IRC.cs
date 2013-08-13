@@ -227,7 +227,6 @@ namespace Kon
             {
                 twitterClientOn = true;
                 Thread.Sleep(500);
-
                 sendInitialTwitterMessage();
             }
         }
@@ -277,7 +276,7 @@ namespace Kon
                     readerStreamClosed = true;
                 }
                 catch (Exception e)
-                { }
+                { Console.WriteLine(e.ToString()); }
             }
 
             if (writer != null)
@@ -465,6 +464,7 @@ namespace Kon
                     catch (Exception e)
                     {
                         rawLine = null;
+                        Console.WriteLine(e.ToString());
                     }
 
 
@@ -935,18 +935,29 @@ namespace Kon
         {
             // Take the current channel user list, split it by spaces.  Add them to an array.  Randomly pick one from
             // the array.  Return that user.
-            string[] channelUsersArray;
-            channelUsersArray = channelUsers.Split(new char[] { ' ' });
+            string user = "";
+            try
+            {
+                string[] channelUsersArray;
+                channelUsersArray = channelUsers.Split(new char[] { ' ' });
 
-            // Get a random user.
-            Thread.Sleep(60);
-            int rnd = randnum.Next((channelUsersArray.Length-1));
-            string user = (string)channelUsersArray[rnd];
-
+                // Get a random user.
+                Thread.Sleep(60);
+                int rnd = randnum.Next((channelUsersArray.Length - 1));
+                user = (string)channelUsersArray[rnd];
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error in picking a random channel user.");
+                LogFile(e.ToString());
+                user = "Kon";
+            }
+            
             return user;
         }
 
 #endregion
+
 
 #region autoPerform()
         private void autoPerform()
@@ -1063,7 +1074,6 @@ namespace Kon
         }
 
 #endregion
-
 
 
 #region ConnectionState

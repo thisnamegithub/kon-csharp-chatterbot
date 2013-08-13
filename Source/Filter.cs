@@ -12,7 +12,7 @@
 // Emails: jmp1139@my.gulfcoast.edu           //
 //         Iyouboushi@gmail.com               //
 ////////////////////////////////////////////////
-// This file was last updated on: 12/02/2011  //
+// This file was last updated on: 08/13/2013  //
 ////////////////////////////////////////////////
 ////////////////TO DO///////////////////////////
 // find a better method of filtering out some///
@@ -38,6 +38,52 @@ namespace Kon
         public Filter()
         {
         }
+
+#region canAddToBrain
+        // This function goes through a few basic filters that will be present in the basic and LB brains and determines if the line should be added or not.
+        // returns false if it should be ignored, or true if it should continue on.
+        public static bool canAddToBrain(string conversation, string nick)
+        {
+            // These are never going to change and can be filtered here.
+            if (((((conversation.StartsWith("http:")) || (conversation.StartsWith("https:")) || (conversation.StartsWith("www.")) || (conversation.StartsWith("ftp:"))))))
+                return false;  // We don't want to add URLs.
+
+            if (conversation.StartsWith("!"))
+                return false;
+
+            if (conversation.StartsWith(""))
+                return false;
+
+            if (conversation.StartsWith("["))
+                return false;
+
+            if (conversation.StartsWith("<"))
+                return false;
+
+            if (conversation.StartsWith("#"))
+                return false;
+
+            // We don't want to capture stuff that's supposed to be for or from LB either.
+            if (conversation.StartsWith("lb:"))
+                return false;
+
+            if (((nick.ToUpper() == "LB4") || (nick.ToUpper() == "LB5") || (nick.ToUpper() == "LB6")))
+                return false;
+
+            if (nick.ToUpper() == "ESPERBOT")
+                return false;
+
+            if ((conversation.ToUpper().StartsWith("PING")) || (conversation.ToUpper().StartsWith("VERSION")))
+                return false;
+
+            // we don't want stuff that's too short.
+            if (conversation.Length < 5)
+                return false;
+
+            return true;
+        }
+#endregion
+
 
 #region replaceWithNull_emoticons
         public String replaceWithNull_emoticons(String input)
@@ -378,7 +424,7 @@ namespace Kon
             emoticons.Add("o.o ");
             emoticons.Add("0_o ");
             emoticons.Add("@_@ ");
-            emoticons.Add(">:D ");
+            emoticons.Add(">:( ");
             emoticons.Add("D:");
 
             Thread.Sleep(50);

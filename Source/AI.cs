@@ -40,49 +40,17 @@ namespace Kon
 
         public void addToBrain(string conversation, string nick)
         {
-            // These are never going to change and can be filtered here.
-            if ((conversation.StartsWith("http:") || (conversation.StartsWith("www."))))
-            {
-                // We don't want to add URLs.
-                return;
-            }
-
-            if (conversation.StartsWith("!"))
-                return;
-
-            if (conversation.StartsWith(""))
-                return;
-
-            if (conversation.StartsWith("["))
-                return;
-
-            if (conversation.StartsWith("<"))
-                return;
-
-            // We don't want to capture stuff that's supposed to be for or from LB either.
-            if (conversation.StartsWith("lb:"))
-                return;
-
-            if (nick.ToUpper() == "LB4")
-                return;
-
-            if (nick.ToUpper() == "LB5")
-                return;
-
-            if (nick.ToUpper() == "ESPERBOT")
-                return;
+            // Do a simple filter check to see if it's something we want to add to the basic brain.
 
             // Who needs actions?
             if (conversation.StartsWith("ACTION"))
                 return;
 
-            if ((conversation.ToUpper().StartsWith("PING")) || (conversation.ToUpper().StartsWith("VERSION")))
+            bool canAddToBrain = Filter.canAddToBrain(conversation, nick);
+            
+            if (canAddToBrain == false)
                 return;
-
-            // we don't want stuff that's too short.
-            if (conversation.Length < 5)
-                return;
-
+            
             // Time to filter out some stuff.
             Filter filter = new Filter();
 

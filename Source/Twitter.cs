@@ -12,7 +12,7 @@
 // Emails: jmp1139@my.gulfcoast.edu           //
 //         Iyouboushi@gmail.com               //
 ////////////////////////////////////////////////
-// This file was last updated on: 08/11/2013  //
+// This file was last updated on: 08/13/2013  //
 ////////////////////////////////////////////////
 
 
@@ -30,8 +30,6 @@ namespace Kon
 {
     partial class IRC
     {
-
-
         private     bool        useTwitter                   = false;
         private     bool        twitterClientOn              = false;
         private     bool        showTwitterMessages          = false;
@@ -42,6 +40,7 @@ namespace Kon
         private     string      oauth_consumer_secret        = "";
         private     string      twitterMessage               = "";
         private     Thread      twitterThread;
+        private     int         tweetTries                   = 0;
 
         public void TwitterControl()
         {
@@ -50,7 +49,6 @@ namespace Kon
 
             // Begin the control.
             twitterThread.Start();
-
         }
         
         private void twitterRun()
@@ -62,8 +60,51 @@ namespace Kon
             }
         }
 
-#region sendTwitterMessage()
+#region generateTweet()
+        private void generateTweet()
+        {
+            // Grab a random line from the LB Brain
+            if (myLB != null)
+                twitterMessage = myLB.pullFromBrain("thisisjustatestthereshouldn'tbeanythinginthebrainforthis!", false);
 
+            // If the bot is connected and is in a channel, let's try to replace some stuff.
+            if ((channel != "") && (connected = true)) 
+            {
+
+                string[] words = twitterMessage.Split(' ');
+                int wordCount = words.Length - 1;
+
+                for (int i = 0; i < wordCount; i++)
+                {
+                    if ((words[i].ToString() == "ACTION") || (words[i].ToString() == "ACTION"))
+                        words[i] = "*";
+                    if (words[i].ToString() == "UNNAMED_USER:")
+                        words[i] = randomChannelUser() + ":";
+                    else
+                        words[i] = words[i].Replace("UNNAMED_USER", randomChannelUser());
+                }
+
+                // now to rebuild the reply
+                twitterMessage = "";
+                for (int i = 0; i < words.Length; i++)
+                {
+                    twitterMessage += words[i] + " ";
+                }
+            }
+
+            // Filter a few minor things.
+           // twitterMessage = twitterMessage.Replace("", "");
+            twitterMessage = twitterMessage.Replace("UNNAMED_USER", "Kon");  // A final last effort if all else failed.
+            twitterMessage = twitterMessage.Trim();
+
+            // Sleep for a moment
+            Thread.Sleep(1000);
+
+        }
+#endregion
+
+
+#region sendTwitterMessage()
         private void sendTwitterMessage()
         {
             if (twitterClientOn)
@@ -74,40 +115,9 @@ namespace Kon
                     // This prevents a "file currently in use" error.
                     if (myLB.brainInUse == false)
                     {
-                        
-                        twitterMessage = myLB.pullFromBrain("thisisjustatestthereshouldn'tbeanythinginthebrainforthis!", false);
-                        
-                        Thread.Sleep(1000);
 
-                        if (channel != "")
-                        {
-
-                            string[] words = twitterMessage.Split(' ');
-                            int wordCount = words.Length - 1;
-
-                            for (int i = 0; i < wordCount; i++)
-                            {
-                                if ((words[i].ToString() == "ACTION") || (words[i].ToString() == "ACTION"))
-                                    words[i] = "*";
-                                if (words[i].ToString() == "UNNAMED_USER:")
-                                    words[i] = randomChannelUser() + ":";
-                                else
-                                    words[i] = words[i].Replace("UNNAMED_USER", randomChannelUser());
-                            }
-
-                            // now to rebuild the reply
-                            twitterMessage = "";
-                            for (int i = 0; i < words.Length; i++)
-                            {
-                                twitterMessage += words[i] + " ";
-                            }
-
-                            twitterMessage = twitterMessage.Replace("", "");
-                            twitterMessage = twitterMessage.Replace("UNNAMED_USER", "Kon");  // A final last effort if all else failed.
-                            twitterMessage = twitterMessage.Trim();
-                        }
-                        
-                        Thread.Sleep(100);
+                        generateTweet();
+                        Thread.Sleep(5000);
                         
                         // Update Twitter
                         if (twitterMessage != "")
@@ -139,18 +149,16 @@ namespace Kon
         }
 #endregion
 
-
 #region sendInitialTwitterMessage()
         private void sendInitialTwitterMessage()
         {
             if ((myLB != null) && (sentInitialMessage == false))
             {
-                Thread.Sleep(200);
+                Thread.Sleep(15000);
                 try
                 {
                     sentInitialMessage = true;
-                    twitterMessage = myLB.pullFromBrain(".", false);
-
+                    generateTweet();
                     twitterSendTweet();
 
                     if (showTwitterMessages)
@@ -172,12 +180,11 @@ namespace Kon
         }
 #endregion
 
-
 #region twitterSendTweet()
 
         private void twitterSendTweet()
         {
-            Console.WriteLine("attempting to send the tweet: " + twitterMessage);
+            Console.WriteLine(">>> Attempting to send the tweet: " + twitterMessage);
 
             var oauth_version = "1.0";
             var oauth_signature_method = "HMAC-SHA1";
@@ -238,21 +245,32 @@ namespace Kon
 
             ServicePointManager.Expect100Continue = false;
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(resource_url);
-            request.Headers.Add("Authorization", authHeader);
-            request.Method = "POST";
-            request.ContentType = "application/x-www-form-urlencoded";
-            using (Stream stream = request.GetRequestStream())
+            try
             {
-                byte[] content = ASCIIEncoding.ASCII.GetBytes(postBody);
-                stream.Write(content, 0, content.Length);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(resource_url);
+                request.Headers.Add("Authorization", authHeader);
+                request.Method = "POST";
+                request.ContentType = "application/x-www-form-urlencoded";
+                using (Stream stream = request.GetRequestStream())
+                {
+                    byte[] content = ASCIIEncoding.ASCII.GetBytes(postBody);
+                    stream.Write(content, 0, content.Length);
+                }
+                WebResponse response = request.GetResponse();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                tweetTries++;
+
+                if (tweetTries < 3)
+                    twitterSendTweet();
             }
 
-            WebResponse response = request.GetResponse();
+            tweetTries = 0;
         }
 
 #endregion
-
 
     }
 }

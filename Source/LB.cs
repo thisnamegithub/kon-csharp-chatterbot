@@ -18,7 +18,7 @@
 // Emails: jmp1139@my.gulfcoast.edu           //
 //         Iyouboushi@gmail.com               //
 ////////////////////////////////////////////////
-// This file was last updated on: 8/11/2013  //
+// This file was last updated on: 8/13/2013  //
 ////////////////////////////////////////////////
 
 using System;
@@ -36,9 +36,10 @@ namespace Kon
 #region variables
         public  static StreamWriter brain;
         public         bool         brainInUse               = false;
+        public  static Filter       filter;
         private        string       BRAIN_FILE               = "lb.brain";
-        private const  string       BRAIN_FILE_QUESTIONS     = "lb-question.brain";
-        private const  string       BRAIN_FILE_STATEMENTS    = "lb-statements.brain";
+        private const  string       BRAIN_FILE_QUESTIONS     = "lb-question.brain";  // defunct, but leaving for now.
+        private const  string       BRAIN_FILE_STATEMENTS    = "lb-statements.brain"; // defunct, but leaving for now.
         private const  string       KON_BRAIN                = "kon.brain";
         private        Random       randnum                  = new Random();
         private        string       lastLine                 = "";
@@ -52,64 +53,22 @@ namespace Kon
         private       String        keyword2;
         private       String        conversationOriginal     = "";
 
-
 #endregion
 
         public LBbrain()
         {
+            // Let's start filtering out some stuff.
+            filter = new Filter();
         }
 
 #region Add To Brain
         public void addToBrain(string conversation, string nick)
         {
-            // These are never going to change and can be filtered here.
-            if (((conversation.StartsWith("http:") || (conversation.StartsWith("https:")) || (conversation.StartsWith("www.")))))
-                return;  // We don't want to add URLs.
 
-            if (conversation.StartsWith("!"))
+            bool canAddToBrain = Filter.canAddToBrain(conversation, nick);
+
+            if (canAddToBrain == false)
                 return;
-
-         //   if (conversation.StartsWith(""))
-         //       return;
-
-            if (conversation.StartsWith("["))
-                return;
-
-            if (conversation.StartsWith("<"))
-                return;
-
-            if (conversation.StartsWith(">"))
-                return;
-
-            if (conversation.StartsWith("#"))
-                return;
-
-            // We don't want to capture stuff that's supposed to be for or from LB either.
-            if ((conversation.StartsWith("lb:") || (conversation.StartsWith("LB:"))))
-                return;
-            
-            if (nick.ToUpper() == "LB4")
-                return;
-
-            if (nick.ToUpper() == "LB5")
-                return;
-
-            if (nick.ToUpper() == "LB6")
-                return;
-
-            if (nick.ToUpper() == "ESPERBOT")
-                return;
-
-            if ((conversation.ToUpper().StartsWith("PING")) || (conversation.ToUpper().StartsWith("VERSION")))
-                return;
-
-            // we don't want stuff that's too short.
-            if (conversation.Length < 5)
-                return;
-
-            // Let's start filtering out some stuff.
-            Filter filter = new Filter();
-
 
             // This method will call upon a bit of lengthy code to replace all instances of "kon" with "UNNAMED_USER"
             conversation = filter.replaceKonWithUNNAMED_USER(conversation);
@@ -344,9 +303,6 @@ namespace Kon
             randomLine = randomLine.Replace("END_SENTENCE", "");
             randomLine = randomLine.Replace("  ", "");
             randomLine = randomLine.Trim();
-
-            // Let's start cleaning up this mess of a line.
-            Filter filter = new Filter();
 
             // Let's remove some random things.
             if (randomLine.EndsWith("\"") && (!randomLine.StartsWith("\"")))
@@ -602,7 +558,6 @@ namespace Kon
 
                 using (StreamReader brainFile = File.OpenText(BRAIN_FILE))
                 {
-                    Filter filter = new Filter();
                     string lineWithoutPunct = "";
 
                     while ((line = brainFile.ReadLine()) != null)
@@ -638,7 +593,6 @@ namespace Kon
                 {
                     using (StreamReader brainFile = File.OpenText(BRAIN_FILE))
                     {
-                        Filter filter = new Filter();
                         string lineWithoutPunct = "";
 
                         while ((line = brainFile.ReadLine()) != null)
@@ -799,8 +753,6 @@ namespace Kon
 
 
                 // Let's start filtering out some stuff.
-                Filter filter = new Filter();
-
 
                 // This method will call upon a bit of lengthy code to replace all instances of "kon" with "UNNAMED_USER"
                 tempConvo = filter.replaceKonWithUNNAMED_USER(tempConvo);
@@ -849,6 +801,7 @@ namespace Kon
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e.ToString());
                             break;
                         }
                     }
@@ -933,7 +886,6 @@ namespace Kon
             randomLine = randomLine.Trim();
 
             // Let's start cleaning up this mess of a line.
-            Filter filter = new Filter();
 
             // Let's remove some random things.
             if (randomLine.EndsWith("\"") && (!randomLine.StartsWith("\"")))
@@ -948,7 +900,7 @@ namespace Kon
                 randomLine = randomLine.Replace(")", "");
 
             randomLine = randomLine.Replace("ACTION", "*");
-            randomLine = randomLine.Replace("UNNAMED_USER", "someone");
+            randomLine = randomLine.Replace("UNNAMED_USER", "someone"); 
             randomLine = randomLine.Replace("RANDOM_EMOTICON_HAPPY", filter.randomEmoticon_happy());
             randomLine = randomLine.Replace("RANDOM_EMOTICON_SAD", filter.randomEmoticon_sad());
 
