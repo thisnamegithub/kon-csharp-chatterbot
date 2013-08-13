@@ -278,4 +278,8 @@
   LB Brain to be on in order to work properly.
 - Changed the "Answer Search" code slightly so that it tries to find more than one answer to the same line.  This may or may not
   help/improve anything.
+- Changed the LB brain so that it stores the starting lines in memory instead of loading them every single time something is 
+  added to the brain file.
+- Changed the way the filter works slightly so that when it adds things to the LB and basic brains it can run one of the
+  same functions. This reduces code a little and makes it cleaner.
 - Fixed the Twitter aspect so that it works with the 1.1 OATH system.
