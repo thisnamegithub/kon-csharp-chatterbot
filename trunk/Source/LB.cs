@@ -49,10 +49,10 @@ namespace Kon
         private        string[]     commonWords              = { "THERE", "THAT", "THIS", "HERE", "YOUR", "THEY", "IT'S", "OTHER", "HAVE", "STILL", "VERY", "THEIR", "ITS", "WHY", "HOW", "WHO", "ARE", "MY" };
         private        string[]     questionWords            = { "WHO", "WHAT", "WHERE ARE ", "WHERE IS ", "WHERE DO ", "WHEN ARE", "WHEN IS", "WHY", "HOW", "ARE", "CAN", "SHOULD", "WHICH", "WILL ", "WHOSE", "WHO'S", "ISN'T", "IS ", "DO ", "Y U NO ", "WONDER WHAT", "SO, WHY", "SO WHY", "DID THEY" };
         private        ArrayList    startingLines;
-        private const  String        regExPattern             = @".*?(?<kon>.*?)(?<character>.*?).*?";
-        private        String        keyword1;
-        private        String        keyword2;
-        private        String        conversationOriginal     = "";
+        private const  String       regExPattern             = @".*?(?<kon>.*?)(?<character>.*?).*?";
+        private        String       keyword1;
+        private        String       keyword2;
+        private        String       conversationOriginal     = "";
 
 #endregion
 
@@ -490,7 +490,18 @@ namespace Kon
 
             if (startingSentenceLines.Count == 0)
             {
-                startingSentenceLines = startingLines;
+
+                using (StreamReader brainFile = File.OpenText(BRAIN_FILE))
+                {
+                    while ((line = brainFile.ReadLine()) != null)
+                    {
+                        if (line.StartsWith("START_SENTENCE"))
+                            startingSentenceLines.Add(line);
+                    }
+                    brainFile.Close();
+                }
+
+               // startingSentenceLines = startingLines;
             }
             
             numberOfLines = startingSentenceLines.Count;
@@ -710,7 +721,6 @@ namespace Kon
         {
             string tempConvo = originalConversation;
 
-
             using (StreamReader brainFile = File.OpenText(KON_BRAIN))
             {
                 // This will add all of the lines in the brain file to an array so we can use them
@@ -718,8 +728,7 @@ namespace Kon
                 bool foundLine = false;
 
                 ArrayList AnswerLines = new ArrayList();
-                 int numberOfAnswerLines;
-
+                int numberOfAnswerLines;
 
                 // Let's start filtering out some stuff.
 
