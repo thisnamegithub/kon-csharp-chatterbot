@@ -57,6 +57,7 @@ namespace Kon
         private        bool            canQuit             = false;
         private        bool            AIML                = false;
         private        bool            topics              = true;
+        private        bool            useAnswerLine       = false;
         public static  bool            LB                  = true;
         public static  bool            logging             = true;
         private        bool            showServerMsgs      = false;

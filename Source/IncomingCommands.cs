@@ -48,7 +48,7 @@ namespace Kon
         // !utter, !toggleTopic, !randomTalk [#],      //
         // !join #channel, !part #channel,             //
         // !toggleDoubleSentences,                     //
-        // !toggleAnswerSearch                         //
+        // !toggleAnswerSearch, !toggleCopyAnswer      //
         // ALL LEVEL:                                  //
         // !splash, !konInfo, !brainInfo, !LBinfo      //
         // !haiku                                      //
@@ -185,12 +185,12 @@ namespace Kon
 #region LBbrain
                     if (LB)
                     {
-                        reply = myLB.pullFromBrain(conversation, topics);
+                        reply = myLB.pullFromBrain(conversation, topics, useAnswerLine);
 
                         if ((doubleSentences) && (reply.Length < 5))
                         {
                             Thread.Sleep(10);
-                            string reply2 = myLB.pullFromBrain(reply, true);
+                            string reply2 = myLB.pullFromBrain(reply, true, useAnswerLine);
 
                             string tempReply1 = reply.Remove(reply.Length - 1);
                             string tempReply2 = reply2.Remove(reply2.Length - 1);
@@ -492,6 +492,25 @@ namespace Kon
                     {
                         topics = true;
                         sendToChannel("4I will now try to locate the topic in what you say to me.", location);
+                    }
+                }
+                else
+                    sendToChannel("4You do not have access to this command.", location);
+            }
+
+            if (command == "!TOGGLECOPYANSWER")
+            {
+                if ((isUser(nick)) || (isAdmin(nick)))
+                {
+                    if (useAnswerLine == false)
+                    {
+                        useAnswerLine = true;
+                        sendToChannel("4I will reply with answers I find.", location);
+                    }
+                    else
+                    {
+                        useAnswerLine = false;
+                        sendToChannel("4I will now stop replying with direct answers I find.", location);
                     }
                 }
                 else
