@@ -18,7 +18,7 @@
 // Emails: jmp1139@my.gulfcoast.edu           //
 //         Iyouboushi@gmail.com               //
 ////////////////////////////////////////////////
-// This file was last updated on: 8/13/2013  //
+// This file was last updated on: 8/16/2013  //
 ////////////////////////////////////////////////
 
 using System;
@@ -224,7 +224,7 @@ namespace Kon
 
 
 #region Pull From Brain
-        public String pullFromBrain(string conversation, bool topic)
+        public String pullFromBrain(string conversation, bool topic, bool copyAnswerLine)
         {
             // Does the bot have a brain?  If not, we can't proceede without crashing.
             if (!File.Exists(BRAIN_FILE))
@@ -241,66 +241,96 @@ namespace Kon
             String convoStart;
             keyword1 = keyword2 = "";
 
+            if (!IRC.answerSearch)
+                copyAnswerLine = false;
+
             
             // Are we using the "Answer Search" option to try and create more accurate answers?
             if (IRC.answerSearch)
-                conversation = doAnswerSearch(conversation);
-
-            if (topic)
-                convoStart = getTopicFromConvo(conversation);
-
-            else
-                convoStart = "";
-
-
-            // If a topic was chosen we need to build a sentence AROUND the topic.  We shouldn't start the sentence
-            // with the topic.  Although that'll work, it isn't always coherent.  So let's try to find a word or
-            // two before it.
-
-            if (convoStart != "")
-                randomLine = getTopicStarter(convoStart);
-
-            
-            // Let's grab the start of our sentence now.
-            randomLine = getStartingSentence(randomLine);
-
-            string searchWord = "";
-            string originalLine = randomLine;
-            int count = 0;
-
-
-            // While the searchWord is not "START_SENTENCE" let's continue to build the sentence.
-            do
             {
-                searchWord = getFirstWord(randomLine);
-                if (searchWord != "")
+                string conversationTemp = doAnswerSearch(conversation);
+
+                if (conversationTemp == conversation)
+                    copyAnswerLine = false;
+                else
+                    conversation = conversationTemp;
+            }
+
+            if (!copyAnswerLine)
+            {
+                if (topic)
+                    convoStart = getTopicFromConvo(conversation);
+
+                else
+                    convoStart = "";
+
+
+                // If a topic was chosen we need to build a sentence AROUND the topic.  We shouldn't start the sentence
+                // with the topic.  Although that'll work, it isn't always coherent.  So let's try to find a word or
+                // two before it.
+
+                if (convoStart != "")
+                    randomLine = getTopicStarter(convoStart);
+
+
+                // Let's grab the start of our sentence now.
+                randomLine = getStartingSentence(randomLine);
+
+                string searchWord = "";
+                string originalLine = randomLine;
+                int count = 0;
+
+
+                // While the searchWord is not "START_SENTENCE" let's continue to build the sentence.
+                do
                 {
-                    randomLine = getPreviousLine(searchWord);
-                    originalLine = randomLine + originalLine;
-                    count++;
-                }
+                    searchWord = getFirstWord(randomLine);
+                    if (searchWord != "")
+                    {
+                        randomLine = getPreviousLine(searchWord);
+                        originalLine = randomLine + originalLine;
+                        count++;
+                    }
 
-                if (searchWord == "")
-                    searchWord = "START_SENTENCE";
+                    if (searchWord == "")
+                        searchWord = "START_SENTENCE";
 
-                ///Console.WriteLine("current line: " + randomLine);
-            } while ((!searchWord.StartsWith("START_SENTENCE") && (count < 300)));
+                    ///Console.WriteLine("current line: " + randomLine);
+                } while ((!searchWord.StartsWith("START_SENTENCE") && (count < 300)));
 
-            randomLine = originalLine;
+                randomLine = originalLine;
 
-            searchWord = "";
+                searchWord = "";
 
-            // While the searchWord is not "END_SENTENCE" let's continue to build the sentence.
-            do
-            {
-                searchWord = getLastWord(randomLine);
-                if (searchWord != "")
-                    randomLine += getLine(searchWord);
+                // While the searchWord is not "END_SENTENCE" let's continue to build the sentence.
+                do
+                {
+                    searchWord = getLastWord(randomLine);
+                    if (searchWord != "")
+                        randomLine += getLine(searchWord);
 
-                ///Console.WriteLine("current line: " + randomLine);
-            } while (searchWord != "END_SENTENCE END_SENTENCE");
+                    ///Console.WriteLine("current line: " + randomLine);
+                } while (searchWord != "END_SENTENCE END_SENTENCE");
+            }
+            if (copyAnswerLine)
+                randomLine = conversation;
 
             // Last step: clean up.
+            randomLine = cleanFinalLine(randomLine);
+
+            // Finally, we have our response.  Let's return it.
+            brainInUse = false;
+            return randomLine;
+        }
+#endregion
+
+
+#region cleanFinalLine
+        private String cleanFinalLine(string randomLine)
+        {
+            if (randomLine.Length <= 0)
+                return "...";
+
             // remove "START_SENTENCE" and "END_SENTENCE", trim up the space and replace the emoticons.
             randomLine = randomLine.Replace("START_SENTENCE", "");
             randomLine = randomLine.Replace("END_SENTENCE", "");
@@ -332,7 +362,7 @@ namespace Kon
 
             // Let's try to add some punctuation if it needs one.
             string lastReplyCharacter = randomLine.Substring(randomLine.Length - 1, 1);
-            
+
             // check to see if we need to add another one.
             if ((((((lastReplyCharacter != ".") && (lastReplyCharacter != ",") && ((lastReplyCharacter != "?") && ((lastReplyCharacter != "!") && ((lastReplyCharacter != ":") && (lastReplyCharacter != ";")))))))))
             {
@@ -344,12 +374,10 @@ namespace Kon
             randomLine = randomLine.Replace("RANDOM_EMOTICON_HAPPY", filter.randomEmoticon_happy());
             randomLine = randomLine.Replace("RANDOM_EMOTICON_SAD", filter.randomEmoticon_sad());
 
-            // Finally, we have our response.  Let's return it.
-            brainInUse = false;
+
             return randomLine;
         }
 #endregion
-
 
 #region getTopicFromConvo
         private String getTopicFromConvo(string conversation)
@@ -461,7 +489,6 @@ namespace Kon
         }
 #endregion
 
-
 #region getStartingSentence()
         private String getStartingSentence(string convoStart)
         {
@@ -564,14 +591,17 @@ namespace Kon
                 {
                     string lineWithoutPunct = "";
 
+                    // Filter words.
+                    keyword1 = filter.replaceWithNull_Punctuation(keyword1);
+                    if (keyword2 != "")
+                        keyword2 = filter.replaceWithNull_Punctuation(keyword2);
+
                     while ((line = brainFile.ReadLine()) != null)
                     {
                          lineWithoutPunct = filter.replaceWithNull_Punctuation(line);
-                         keyword1 = filter.replaceWithNull_Punctuation(keyword1);
 
                          if (keyword2 != "")
                          {
-                             keyword2 = filter.replaceWithNull_Punctuation(keyword2);
                              if (lineWithoutPunct.ToUpper().Contains(keyword1.ToUpper()) && lineWithoutPunct.ToUpper().Contains(keyword2.ToUpper()))
                                  startingTopicLines.Add(line);
                          }
@@ -927,7 +957,7 @@ namespace Kon
                    
           //  String haikuTemp = totalNonsense();
             if (inputLine == "") { inputLine = "thisisjustatestyoushouldn'thaveanylinesinthislulz"; }
-            String haikuTemp = IRC.myLB.pullFromBrain(inputLine, false);
+            String haikuTemp = IRC.myLB.pullFromBrain(inputLine, false, false);
 
             string[] nonsenseLine;
             String currentWord;

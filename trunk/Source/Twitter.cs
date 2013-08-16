@@ -65,10 +65,10 @@ namespace Kon
         {
             // Grab a random line from the LB Brain
             if (myLB != null)
-                twitterMessage = myLB.pullFromBrain("thisisjustatestthereshouldn'tbeanythinginthebrainforthis!", false);
+                twitterMessage = myLB.pullFromBrain("thisisjustatestthereshouldn'tbeanythinginthebrainforthis!", false, useAnswerLine);
 
             // If the bot is connected and is in a channel, let's try to replace some stuff.
-            if ((channel != "") && (connected = true)) 
+            if ((channelsCurrentlyIn > 0) && (connected = true)) 
             {
 
                 string[] words = twitterMessage.Split(' ');
@@ -149,6 +149,7 @@ namespace Kon
         }
 #endregion
 
+
 #region sendInitialTwitterMessage()
         private void sendInitialTwitterMessage()
         {
@@ -179,6 +180,7 @@ namespace Kon
                 System.Console.WriteLine("LB Brain should be turned on to use the Twitter client");
         }
 #endregion
+
 
 #region twitterSendTweet()
 
@@ -263,6 +265,7 @@ namespace Kon
                 Console.WriteLine(e.ToString());
                 tweetTries++;
 
+                Thread.Sleep(3000);
                 if (tweetTries < 3)
                     twitterSendTweet();
             }

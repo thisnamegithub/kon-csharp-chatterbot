@@ -207,6 +207,7 @@ namespace Kon
         public String replaceWithNull_Punctuation(String input)
         {
             input = input.Replace("!", "");
+            input = input.Replace("¡", "");
             input = input.Replace("?", "");
             input = input.Replace(";", "");
             input = input.Replace(".", "");
@@ -230,6 +231,9 @@ namespace Kon
 
                 if (currentWord.EndsWith("!"))
                     inputWords[i] = inputWords[i].Replace("!", "");
+
+                if (currentWord.StartsWith("¡"))
+                    inputWords[i] = inputWords[i].Replace("¡", "");
 
                 if (currentWord.EndsWith("?"))
                     inputWords[i] = inputWords[i].Replace("?", "");
